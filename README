@@ -12,16 +12,12 @@ server {
     # Additional configurations...
 }
 
-
-
-
+/////////////////////////////////////////////////////////////////////////////
 
 sudo chown -R www-data:www-data /path/to/your/folder/
 sudo chmod -R 755 /path/to/your/folder/
 
-
-
-
+/////////////////////////////////////////////////////////////////////////////
 
 <?php
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -39,10 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?>
 
-
-
-
-
+/////////////////////////////////////////////////////////////////////////////
 
 <form action="file_manager.php" method="post" enctype="multipart/form-data">
     Select file to upload:
@@ -50,5 +43,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <input type="submit" value="Upload File" name="submit">
 </form>
 
+/////////////////////////////////////////////////////////////////////////////
 
-
+location ~ \.php$ {
+    try_files $uri =404;
+    fastcgi_split_path_info ^(.+\.php)(/.+)$;
+    fastcgi_pass unix:/var/run/php/php7.4-fpm.sock; # Adjust the socket path according to your PHP version
+    fastcgi_index index.php;
+    include fastcgi_params;
+    fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+    fastcgi_param PATH_INFO $fastcgi_path_info;
+}
