@@ -1,33 +1,48 @@
-server {
-    listen 8080;
-    server_name localhost;
-    root /var/www/daemon-space;
-    index index.html;
-
-    location / {
-        try_files $uri $uri/ =404; # Corrected line
-        autoindex on;
-        autoindex_exact_size off;
-        autoindex_localtime on;
-    }
-
-    # Additional configurations...
+location ~ \.php$ {
+    try_files $uri =404;
+    fastcgi_split_path_info ^(.+\.php)(/.+)$;
+    fastcgi_pass unix:/run/php/php7.4-fpm.sock; # Adjust the socket path according to your PHP version
+    fastcgi_index index.php;
+    include fastcgi_params;
+    fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+    fastcgi_param PATH_INFO $fastcgi_path_info;
 }
 
-/////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>File Upload</title>
+</head>
+<body>
+    <form action="upload.php" method="post" enctype="multipart/form-data">
+        Select file to upload:
+        <input type="file" name="fileToUpload" id="fileToUpload">
+        <input type="submit" value="Upload File" name="submit">
+    </form>
+</body>
+</html>
+
+//////////////////////////////////////////////////////////////////////////
 
 <?php
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Handle file uploads
-    if (isset($_FILES['uploaded_file'])) {
-        $target_dir = "/path/to/your/folder/";
-        $target_file = $target_dir. basename($_FILES["uploaded_file"]["name"]);
-        move_uploaded_file($_FILES["uploaded_file"]["tmp_name"], $target_file);
-    }
-    // Handle file deletions
-    elseif (isset($_GET['delete']) && isset($_GET['filename'])) {
-        $file_path = "/path/to/your/folder/". $_GET['filename'];
-        unlink($file_path);
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $target_dir = "/var/www/html/uploads/";
+    $target_file = $target_dir. basename($_FILES["fileToUpload"]["name"]);
+    
+    // Check if image file is a actual image or fake image
+    if(isset($_FILES["fileToUpload"]["tmp_name"]) && is_uploaded_file($_FILES["fileToUpload"]["tmp_name"])){
+        // Move the uploaded file to the target directory
+        if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file)) {
+            echo "The file ". htmlspecialchars(basename($_FILES["fileToUpload"]["name"])). " has been uploaded.";
+        } else {
+            echo "Sorry, there was an error uploading your file.";
+        }
+    } else {
+        echo "Invalid file";
     }
 }
 ?>
+
+//////////////////////////////////////////////////////////////////////////
