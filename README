@@ -54,3 +54,13 @@ location ~ \.php$ {
     fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
     fastcgi_param PATH_INFO $fastcgi_path_info;
 }
+
+/////////////////////////////////////////////////////////////////////////////
+
+<?php
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    echo "File upload received.";
+} else {
+    echo "This script only accepts POST requests.";
+}
+?>
