@@ -1,0 +1,54 @@
+server {
+    listen 80;
+    server_name example.com;
+
+    location /files/ {
+        alias /path/to/your/folder/;
+        autoindex on;
+        autoindex_exact_size off;
+        autoindex_localtime on;
+    }
+
+    # Additional configurations...
+}
+
+
+
+
+
+sudo chown -R www-data:www-data /path/to/your/folder/
+sudo chmod -R 755 /path/to/your/folder/
+
+
+
+
+
+<?php
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Handle file uploads
+    if (isset($_FILES['uploaded_file'])) {
+        $target_dir = "/path/to/your/folder/";
+        $target_file = $target_dir. basename($_FILES["uploaded_file"]["name"]);
+        move_uploaded_file($_FILES["uploaded_file"]["tmp_name"], $target_file);
+    }
+    // Handle file deletions
+    elseif (isset($_GET['delete']) && isset($_GET['filename'])) {
+        $file_path = "/path/to/your/folder/". $_GET['filename'];
+        unlink($file_path);
+    }
+}
+?>
+
+
+
+
+
+
+<form action="file_manager.php" method="post" enctype="multipart/form-data">
+    Select file to upload:
+    <input type="file" name="uploaded_file" id="uploaded_file">
+    <input type="submit" value="Upload File" name="submit">
+</form>
+
+
+
