@@ -15,3 +15,19 @@ server {
 }
 
 /////////////////////////////////////////////////////
+
+<?php
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Handle file uploads
+    if (isset($_FILES['uploaded_file'])) {
+        $target_dir = "/path/to/your/folder/";
+        $target_file = $target_dir. basename($_FILES["uploaded_file"]["name"]);
+        move_uploaded_file($_FILES["uploaded_file"]["tmp_name"], $target_file);
+    }
+    // Handle file deletions
+    elseif (isset($_GET['delete']) && isset($_GET['filename'])) {
+        $file_path = "/path/to/your/folder/". $_GET['filename'];
+        unlink($file_path);
+    }
+}
+?>
